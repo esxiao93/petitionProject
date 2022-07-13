@@ -9,7 +9,7 @@ import {
   Logout,
 } from 'tabler-icons-react';
 
-function NavBarContainer({setUser, user}) {
+function NavBarContainer({setUser, user, setIsLoggedIn}) {
 
   let navigate = useNavigate();
 
@@ -33,6 +33,7 @@ function NavBarContainer({setUser, user}) {
     })
     .then(() => {
       setUser(null)
+      setIsLoggedIn(false)
     });
   }
 

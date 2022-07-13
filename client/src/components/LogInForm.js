@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, Title, Button, Group, TextInput, PasswordInput, Paper, DEFAULT_THEME, Container, Space } from '@mantine/core';
 // import { useMantineTheme } from '@mantine/core';
-function LoginForm({setShowLogin, onLogin}) {
+function LoginForm({setShowLogin, onLogin, setIsLoggedIn}) {
 
   let navigate = useNavigate();
 
@@ -22,6 +22,7 @@ function LoginForm({setShowLogin, onLogin}) {
       if (r.ok) {
         r.json().then((user) => {
         onLogin(user)
+        setIsLoggedIn(true)
         navigate('/')
       });
       } else {
