@@ -5,26 +5,13 @@ import { Text, Group, useMantineTheme, Paper, Button } from '@mantine/core';
 import { User } from 'tabler-icons-react';
 
 function PetitionPage({user}) {
-
-  // let {id} = useParams();
   const params = useParams()
   let navigate = useNavigate();
-
-  const [petition, setPetition] = useState([])
+  const [petition, setPetition] = useState({user_petitions: []})
   const [signature, setSignature] = useState(null)
-  const [matchedPetiton, setMatchedPetition] = useState(false)
-  // const [title, setTitle] = useState("")
-  // const [description, setDescription] = useState("")
+  const [matchedPetiton, setMatchedPetition] = useState(null)
 
   useEffect(() => {
-
-    // fetch(`/petitions/${params.id}`)
-    // .then(response => response.json())
-    // .then(petition => {
-    //   setPetition(petition)
-    //   setSignature(petition.signature)
-    // })
-    // .catch(error => console.log(error))
     
     const getPetitions = async () => {
       const response = await fetch(`/petitions/${params.id}`)
@@ -38,12 +25,10 @@ function PetitionPage({user}) {
     }
 
     getPetitions()
-    setPetitionCounter()
 
   },[])
 
   function handleSignatureClick() {
-    // Clicking Sign Petition create a new data in the UserPetition table
     fetch(`/user_petitions`,{
       method: 'POST',
       headers: {
@@ -75,14 +60,14 @@ function PetitionPage({user}) {
   };
 
   function setPetitionCounter() {
-
-    if (user.user_petitions.some(petition => petition.petition_id === parseInt(params.id))) {
-      setMatchedPetition(true)
+    let buttons
+    if (petition.user_petitions.some(petition => petition.user_id === user.id)) {
+      buttons = <Button onClick={handleSignatureClick} disabled>Sign Petition </Button>
     } else {
-      setMatchedPetition(false)
+      buttons = <Button onClick={handleSignatureClick} >Sign Petition </Button>
     }
+    return buttons
   }
-
 
   const theme = useMantineTheme();
 
@@ -104,13 +89,7 @@ function PetitionPage({user}) {
         <Text>
           {petition.signature} people have signed this petition
         </Text>
-        {matchedPetiton ?
-          <Button onClick={handleSignatureClick} >Sign Petition </Button>
-          // <h1>matched on</h1>
-        : 
-          <Button onClick={handleSignatureClick} disabled>Sign Petition </Button>
-          // <h1>matched off</h1>
-        }
+        {setPetitionCounter()}
     
           </Paper>
   </div>
