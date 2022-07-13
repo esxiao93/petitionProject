@@ -25,6 +25,7 @@ function App() {
   const theme = useMantineTheme();
 
   const [user, setUser] = useState({user_petitions: []});
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [congressionalMembers, setCongressionalMembers] = useState([]);
   const [opened, setOpened] = useState(false);
 
@@ -36,14 +37,13 @@ function App() {
       const data = await response.json()
       if(response.ok) {
         setUser(data)
+        setIsLoggedIn(true)
       } else {
         console.log(data.errors)
       } 
     }
   
     getUsers()
-
-
   }, []);
 
 
@@ -56,7 +56,7 @@ function App() {
 
 
   // Reroute user to <Login /> Component if not authenticated
-  if (!user) return <LogInPage onLogin={setUser} />;
+  if (!isLoggedIn) return <LogInPage onLogin={setUser} setIsLoggedIn={setIsLoggedIn}/>;
 
 
   return (
@@ -72,7 +72,7 @@ function App() {
 
       navbar={
         <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 300 }}>
-        {<NavBarContainer setUser={setUser} user={user} />}
+        {<NavBarContainer setUser={setUser} user={user} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />}
         </Navbar>
       }
 
