@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   resources :key_issues, only: [:index, :show]
-  resources :user_petitions, only: [:index, :show]
+  resources :user_petitions, only: [:index, :show, :create]
   resources :petitions, only: [:index, :show, :create, :update, :destroy] do 
     member do
       get 'congressional_member_petitions'

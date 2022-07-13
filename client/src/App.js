@@ -24,17 +24,26 @@ function App() {
 
   const theme = useMantineTheme();
 
-  const [user, setUser] = useState({petitions: []});
+  const [user, setUser] = useState({user_petitions: []});
   const [congressionalMembers, setCongressionalMembers] = useState([]);
   const [opened, setOpened] = useState(false);
 
 
   useEffect(() => {
-    fetch('/me').then((r) => {
-      if (r.ok) {
-        r.json().then((user) => setUser(user));
-      }
-    });
+
+    const getUsers = async () => {
+      const response = await fetch("/me")
+      const data = await response.json()
+      if(response.ok) {
+        setUser(data)
+      } else {
+        console.log(data.errors)
+      } 
+    }
+  
+    getUsers()
+
+
   }, []);
 
 

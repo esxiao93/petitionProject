@@ -1,12 +1,12 @@
 class UserPetitionsController < ApplicationController
 
     def index
-        user_petitions = UserPetitions.all
+        user_petitions = UserPetition.all
         render json: user_petitions, status: 200
     end
 
     def show 
-      user_petition = Petition.find(params[:id])
+      user_petition = UserPetition.find(params[:id])
       if user_petition
           render json: userPetition, status: 200
       else 
@@ -14,9 +14,10 @@ class UserPetitionsController < ApplicationController
       end
     end
 
-    # def sign
-    
-    # end
+    def create
+        new_user_petition = UserPetition.create!(user_petition_params)
+        render json: new_user_petition, status: :created
+    end
 
     private
 

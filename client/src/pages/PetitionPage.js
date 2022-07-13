@@ -5,64 +5,69 @@ import { Text, Group, useMantineTheme, Paper, Button } from '@mantine/core';
 import { User } from 'tabler-icons-react';
 
 function PetitionPage({user}) {
-
-  let {id} = useParams();
+  const params = useParams()
   let navigate = useNavigate();
-
-  const [petition, setPetition] = useState([])
+  const [petition, setPetition] = useState({user_petitions: []})
   const [signature, setSignature] = useState(null)
-
   const [matchedPetiton, setMatchedPetition] = useState(null)
-  // const [isClicked, setIsClicked] = useState(false)
-  // const [title, setTitle] = useState("")
-  // const [description, setDescription] = useState("")
-
 
   useEffect(() => {
-    fetch(`/petitions/${id}`)
-    .then(response => response.json())
-    .then(petition => {
-      setPetition(petition)
-      setSignature(petition.signature)
-    })
-    .catch(error => console.log(error))
-    setPetitionCounter()
+    
+    const getPetitions = async () => {
+      const response = await fetch(`/petitions/${params.id}`)
+      const petition = await response.json()
+      if(response.ok) {
+        setPetition(petition)
+        setSignature(petition.signature)
+      } else {
+        console.log("not loaded")
+      } 
+    }
+
+    getPetitions()
+
   },[])
 
-  console.log(petition.signature)
-
   function handleSignatureClick() {
-    // setSignature(prevSignature => prevSignature + 1)
-    // setIsClicked(!isClicked)
-    fetch(`/petitions/${id}`,{
+    fetch(`/user_petitions`,{
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: user.id,
+        petition_id: params.id
+      }),
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    
+    setMatchedPetition(true)
+
+    setSignature(prevSignature => prevSignature + 1)
+    fetch(`/petitions/${params.id}`,{
       method: 'PATCH',
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        // title: title,
-        // description: description,
         signature: signature + 1
       }),
     })
     .then(response => response.json())
     window.location.reload()
     navigate(-1)
-    };
+  };
 
-    console.log(petition)
-
-    function setPetitionCounter() {
-      if (user.petitions.some(petition => petition.id === id)) {
-        setMatchedPetition(user.petitions.find(petition => petition.id === id))
+  function setPetitionCounter() {
+    let buttons
+    if (petition.user_petitions.some(petition => petition.user_id === user.id)) {
+      buttons = <Button onClick={handleSignatureClick} disabled>Sign Petition </Button>
     } else {
-        setMatchedPetition(null)
+      buttons = <Button onClick={handleSignatureClick} >Sign Petition </Button>
     }
-    }
-
-    console.log(user)
-  
-
+    return buttons
+  }
 
   const theme = useMantineTheme();
 
@@ -84,12 +89,7 @@ function PetitionPage({user}) {
         <Text>
           {petition.signature} people have signed this petition
         </Text>
-        {matchedPetiton ? (
-          <Button onClick={handleSignatureClick} disabled>Sign Petition </Button>
-
-        ) : (
-          <Button onClick={handleSignatureClick} >Sign Petition </Button>          
-        )}
+        {setPetitionCounter()}
     
           </Paper>
   </div>
